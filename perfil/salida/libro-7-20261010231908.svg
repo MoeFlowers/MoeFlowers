@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="53" height="236" viewBox="0 0 53 236" role="img" aria-label="Ordo">
+<style>
+.sale{animation:sale 7s ease-in-out 1.5s infinite}
+@keyframes sale{0%,62%,100%{transform:translateY(0)}74%,88%{transform:translateY(-12px)}}
+@media (prefers-reduced-motion:reduce){.sale{animation:none}}
+</style>
+<defs><linearGradient id="gaef8d135" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#782F1B"/><stop offset=".18" stop-color="#B8492A"/>
+<stop offset=".55" stop-color="#C26248"/><stop offset="1" stop-color="#6B2A18"/>
+</linearGradient></defs>
+<rect x="0" y="212" width="53" height="7" fill="#9C7A5B"/><rect x="0" y="219" width="53" height="13" fill="#6E5139"/><rect x="0" y="219" width="53" height="1" fill="#B8977A"/><rect x="0" y="232" width="53" height="4" fill="#000" opacity=".18"/>
+<g>
+<rect x="2" y="38" width="49" height="174" rx="2.5" fill="url(#gaef8d135)"/>
+<rect x="2" y="50" width="49" height="2" fill="#D89B8A" opacity=".7"/>
+<rect x="2" y="196" width="49" height="2" fill="#D89B8A" opacity=".7"/>
+
+<text transform="translate(31.2 125.0) rotate(-90)" text-anchor="middle" fill="#FFFFFF" style="font:600 13px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:.2px">Ordo</text>
+</g>
+</svg>

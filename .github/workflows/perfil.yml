@@ -1,0 +1,45 @@
+name: Perfil
+
+# Regenera docker inspect, docker ps y la librería con los datos del día
+on:
+  schedule:
+    - cron: "17 11 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [perfil/perfil.py, perfil/perfil.json]
+
+permissions:
+  contents: write
+
+# Comparte grupo con el puerto: así nunca empujan los dos a la vez
+concurrency:
+  group: puerto
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Generar las secciones
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 perfil/perfil.py
+
+      # Commits del bot y no del usuario: la actualización diaria no debe sumar actividad a su gráfica
+      - name: Guardar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A perfil README.md
+          if git diff --cached --quiet; then
+            echo "Sin cambios"
+          else
+            git commit -m "Perfil: datos del día"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

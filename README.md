@@ -29,38 +29,22 @@
 <!-- PUERTO:FIN -->
 
 
-### About me · Sobre mí
+### Sobre mí
 
-Full-stack developer with **3+ years** building web and mobile apps, bots and automations. I work in the **healthcare sector** (remote, international) and build **dual-currency billing and inventory systems** (USD/VES with the official BCV rate) for businesses in Venezuela and LATAM. I have automated about **21 h/week** of manual work across clients.
+<!-- INSPECT:INICIO -->
+<img src="perfil/salida/inspect-20261010231908.svg" alt="docker inspect moeflowers: perfil, estado y tasa BCV del día" width="100%">
+<!-- INSPECT:FIN -->
 
-Desarrollador full-stack con más de 3 años creando apps web y móviles, bots y automatizaciones. Trabajo en el sector salud (remoto, internacional) y construyo sistemas de facturación e inventario en doble moneda para negocios de Venezuela y LATAM.
+### Tecnologías
 
-Yaracuy, Venezuela (UTC-4) · open to remote or hybrid work · Systems Engineer (UNEFA)
+<!-- PS:INICIO -->
+<img src="perfil/salida/ps-20261010231908.svg" alt="docker ps: lenguajes de mis repositorios públicos" width="100%">
+<!-- PS:FIN -->
 
-### Stack
+### Proyectos
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat-square&logo=php&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
-![Vue](https://img.shields.io/badge/Vue-42B883?style=flat-square&logo=vuedotjs&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=black)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![Blender](https://img.shields.io/badge/Blender-E87D0D?style=flat-square&logo=blender&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+<!-- LIBROS:INICIO -->
+<p><img src="perfil/salida/libro-0-20261010231908.svg" alt="" height="236"><a href="https://github.com/MoeFlowers/Portfolio" title="Portfolio: Portafolio personal con casos de estudio · TypeScript · actualizado 2026-10-10"><img src="perfil/salida/libro-1-20261010231908.svg" alt="Portfolio" title="Portfolio: Portafolio personal con casos de estudio · TypeScript · actualizado 2026-10-10" height="236"></a><a href="https://github.com/MoeFlowers/catalogo-saas" title="Catálogo SaaS: Catalogo+WA: SaaS multi-tenant de catálogo con pedidos por WhatsApp (en planificación) · actualizado 2026-10-10"><img src="perfil/salida/libro-2-20261010231908.svg" alt="catalogo-saas" title="Catálogo SaaS: Catalogo+WA: SaaS multi-tenant de catálogo con pedidos por WhatsApp (en planificación) · actualizado 2026-10-10" height="236"></a><a href="https://github.com/MoeFlowers/stockflow" title="StockFlow: página de planes y vídeos promocionales de un sistema de inventario con control por WhatsApp · HTML · actualizado 2026-10-10"><img src="perfil/salida/libro-3-20261010231908.svg" alt="stockflow" title="StockFlow: página de planes y vídeos promocionales de un sistema de inventario con control por WhatsApp · HTML · actualizado 2026-10-10" height="236"></a><a href="https://github.com/MoeFlowers/puerto-vivo" title="Puerto Vivo: Gemelo digital de una terminal de contenedores en 3D con React Three Fiber (datos simulados) · TypeScript · actualizado 2026-10-10"><img src="perfil/salida/libro-4-20261010231908.svg" alt="puerto-vivo" title="Puerto Vivo: Gemelo digital de una terminal de contenedores en 3D con React Three Fiber (datos simulados) · TypeScript · actualizado 2026-10-10" height="236"></a><a href="https://github.com/MoeFlowers/landings-3d" title="Landings 3D: Tres landings conceptuales (hotel, cat café y anillo) con renders de Blender y animación con scroll en Next.js · Python · actualizado 2026-10-10"><img src="perfil/salida/libro-5-20261010231908.svg" alt="landings-3d" title="Landings 3D: Tres landings conceptuales (hotel, cat café y anillo) con renders de Blender y animación con scroll en Next.js · Python · actualizado 2026-10-10" height="236"></a><a href="https://github.com/MoeFlowers/ia-para-empresarios" title="IA para empresarios: Recupere su Tiempo: presentación interactiva y temario de un curso de IA práctica para empresarios · HTML · actualizado 2026-10-10"><img src="perfil/salida/libro-6-20261010231908.svg" alt="ia-para-empresarios" title="IA para empresarios: Recupere su Tiempo: presentación interactiva y temario de un curso de IA práctica para empresarios · HTML · actualizado 2026-10-10" height="236"></a><a href="https://github.com/MoeFlowers/ordo" title="Ordo: control de finanzas personales multi-moneda (Bs/USD/USDT/EUR): deudas, suscripciones, metas, gastos y planificador. Vue 3 + Supabase (RLS) + Vercel, PWA. · HTML · actualizado 2026-09-16"><img src="perfil/salida/libro-7-20261010231908.svg" alt="ordo" title="Ordo: control de finanzas personales multi-moneda (Bs/USD/USDT/EUR): deudas, suscripciones, metas, gastos y planificador. Vue 3 + Supabase (RLS) + Vercel, PWA. · HTML · actualizado 2026-09-16" height="236"></a><a href="https://github.com/MoeFlowers/pagestest" title="Pages test · HTML · actualizado 2026-05-06"><img src="perfil/salida/libro-8-20261010231908.svg" alt="pagestest" title="Pages test · HTML · actualizado 2026-05-06" height="236"></a><a href="https://github.com/MoeFlowers/portal_hotel" title="Portal hotel: web de hotel para pruebas · Astro · actualizado 2026-01-27"><img src="perfil/salida/libro-9-20261010231908.svg" alt="portal_hotel" title="Portal hotel: web de hotel para pruebas · Astro · actualizado 2026-01-27" height="236"></a><a href="https://github.com/MoeFlowers/vibes-mini-market" title="Vibes Mini Market · TypeScript · actualizado 2025-08-29"><img src="perfil/salida/libro-10-20261010231908.svg" alt="vibes-mini-market" title="Vibes Mini Market · TypeScript · actualizado 2025-08-29" height="236"></a><a href="https://github.com/MoeFlowers/Sistema-de-Recomendaci-n-de-Libros-con-IA" title="Recomendador IA: Recomendador de libros con IA: filtrado colaborativo sobre más de 10.000 libros · Python · actualizado 2025-08-26"><img src="perfil/salida/libro-11-20261010231908.svg" alt="Sistema-de-Recomendaci-n-de-Libros-con-IA" title="Recomendador IA: Recomendador de libros con IA: filtrado colaborativo sobre más de 10.000 libros · Python · actualizado 2025-08-26" height="236"></a><a href="https://github.com/MoeFlowers/editor" title="Editor 3D: Open-source 3D architectural editor with a local CLI, MCP tools, and practical workflows for humans and AI agents. · fork · TypeScript · actualizado 2026-09-27"><img src="perfil/salida/libro-12-20261010231908.svg" alt="editor" title="Editor 3D: Open-source 3D architectural editor with a local CLI, MCP tools, and practical workflows for humans and AI agents. · fork · TypeScript · actualizado 2026-09-27" height="236"></a><a href="https://github.com/MoeFlowers/odoo" title="Odoo. Open Source Apps To Grow Your Business. · fork · actualizado 2026-07-09"><img src="perfil/salida/libro-13-20261010231908.svg" alt="odoo" title="Odoo. Open Source Apps To Grow Your Business. · fork · actualizado 2026-07-09" height="236"></a><a href="https://github.com/MoeFlowers/tarea_implantacion" title="Tarea implantación: Actividad para realizar pruebas colaborativas de participacion en la clase de implamtacion de sistemas. · fork · actualizado 2024-12-08"><img src="perfil/salida/libro-14-20261010231908.svg" alt="tarea_implantacion" title="Tarea implantación: Actividad para realizar pruebas colaborativas de participacion en la clase de implamtacion de sistemas. · fork · actualizado 2024-12-08" height="236"></a><img src="perfil/salida/libro-z-20261010231908.svg" alt="" height="236"></p>
+<!-- LIBROS:FIN -->
 
-### Projects · Proyectos
-
-| Project | What it does · Qué hace | Stack |
-|---|---|---|
-| [**Puerto Vivo**](https://github.com/MoeFlowers/puerto-vivo) | Real-time 3D digital twin of a container terminal (simulated data) · Gemelo digital 3D de una terminal de contenedores | React Three Fiber · Blender |
-| [**Ordo**](https://github.com/MoeFlowers/ordo) | Multi-currency personal finance PWA: debts, subscriptions, goals · Finanzas personales multimoneda | Vue · Supabase |
-| **Point of Sale & Inventory** | Dual-currency (USD/VES · BCV) POS, inventory and billing for shops · Punto de venta e inventario en doble moneda | PHP · MySQL |
-| [**Landings 3D**](https://github.com/MoeFlowers/landings-3d) | Three concept landing pages driven by Blender-rendered scroll sequences · Tres landings con secuencias renderizadas en Blender | Next.js · Blender |
-| [**AI Book Recommender**](https://github.com/MoeFlowers/Sistema-de-Recomendaci-n-de-Libros-con-IA) | Collaborative filtering over 10k+ books, 85% user-validated accuracy · Recomendador de libros con IA | Python · Scikit-learn |
-
-Full case studies · Casos de estudio: [portfolio](https://portfolio-eosin-theta-40.vercel.app)
+Casos de estudio completos en el [portfolio](https://portfolio-eosin-theta-40.vercel.app).

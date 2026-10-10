@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="236" viewBox="0 0 48 236" role="img" aria-label="Catálogo SaaS">
+<style>
+.sale{animation:sale 7s ease-in-out 1.5s infinite}
+@keyframes sale{0%,62%,100%{transform:translateY(0)}74%,88%{transform:translateY(-12px)}}
+@media (prefers-reduced-motion:reduce){.sale{animation:none}}
+</style>
+<defs><linearGradient id="g7af51953" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#393E45"/><stop offset=".18" stop-color="#57606A"/>
+<stop offset=".55" stop-color="#6F767F"/><stop offset="1" stop-color="#32383D"/>
+</linearGradient></defs>
+<rect x="0" y="212" width="48" height="7" fill="#9C7A5B"/><rect x="0" y="219" width="48" height="13" fill="#6E5139"/><rect x="0" y="219" width="48" height="1" fill="#B8977A"/><rect x="0" y="232" width="48" height="4" fill="#000" opacity=".18"/>
+<g>
+<rect x="2" y="55" width="44" height="157" rx="2.5" fill="url(#g7af51953)"/>
+<rect x="2" y="67" width="44" height="2" fill="#A3A8AD" opacity=".7"/>
+<rect x="2" y="196" width="44" height="2" fill="#A3A8AD" opacity=".7"/>
+
+<text transform="translate(28.7 133.5) rotate(-90)" text-anchor="middle" fill="#FFFFFF" style="font:600 13px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:.2px">Catálogo SaaS</text>
+</g>
+</svg>

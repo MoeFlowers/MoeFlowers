@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="58" height="236" viewBox="0 0 58 236" role="img" aria-label="Odoo">
+<style>
+.sale{animation:sale 7s ease-in-out 1.5s infinite}
+@keyframes sale{0%,62%,100%{transform:translateY(0)}74%,88%{transform:translateY(-12px)}}
+@media (prefers-reduced-motion:reduce){.sale{animation:none}}
+</style>
+<defs><linearGradient id="g2269658f" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#25282D"/><stop offset=".18" stop-color="#393E45"/>
+<stop offset=".55" stop-color="#55595F"/><stop offset="1" stop-color="#212428"/>
+</linearGradient></defs>
+<rect x="0" y="212" width="58" height="7" fill="#9C7A5B"/><rect x="0" y="219" width="58" height="13" fill="#6E5139"/><rect x="0" y="219" width="58" height="1" fill="#B8977A"/><rect x="0" y="232" width="58" height="4" fill="#000" opacity=".18"/>
+<g>
+<rect x="2" y="22" width="54" height="190" rx="2.5" fill="url(#g2269658f)"/>
+<rect x="2" y="34" width="54" height="2" fill="#929599" opacity=".7"/>
+<rect x="2" y="196" width="54" height="2" fill="#929599" opacity=".7"/>
+<path d="M42 22 h8 v22 l-4 -5 l-4 5 z" fill="#C8394F"/>
+<text transform="translate(33.7 117.0) rotate(-90)" text-anchor="middle" fill="#FFFFFF" style="font:600 13px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:.2px">Odoo</text>
+</g>
+</svg>

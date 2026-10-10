@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="830" height="218" viewBox="0 0 830 218" role="img" aria-label="$ docker ps">
+<style>
+text{font:400 13px ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace}
+.l{opacity:0;animation:ver .01s linear forwards}
+.c{animation:escribe 0.49s steps(11) forwards}
+.cursor{animation:parpadeo 1s steps(1) infinite}
+@keyframes ver{to{opacity:1}}
+@keyframes escribe{from{width:0}to{width:90px}}
+@keyframes parpadeo{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.l{animation:none;opacity:1}.c{animation:none;width:90px}.cursor{animation:none}}
+</style>
+<rect x=".5" y=".5" width="829" height="217" rx="8" fill="#0D1117" stroke="#30363D"/>
+<clipPath id="tecleo"><rect class="c" x="22" y="22" width="0" height="21"/></clipPath>
+<text x="22" y="37" clip-path="url(#tecleo)" xml:space="preserve"><tspan fill="#7EE787">$</tspan><tspan fill="#E6EDF3"> docker ps</tspan></text>
+<text x="22" y="68" class="l" style="animation-delay:0.74s" xml:space="preserve"><tspan fill="#9198A1">CONTAINER ID  IMAGE         STATUS           CÓDIGO   REPOS</tspan></text><text x="22" y="89" class="l" style="animation-delay:0.81s" xml:space="preserve"><tspan fill="#9198A1">d4a86cb946d4  </tspan><tspan fill="#A5D6FF">typescript    </tspan><tspan fill="#7EE787">Up 1 year       </tspan><tspan fill="#E6EDF3">  44.1%       5</tspan></text><text x="22" y="110" class="l" style="animation-delay:0.89s" xml:space="preserve"><tspan fill="#9198A1">ee620923ff5f  </tspan><tspan fill="#A5D6FF">javascript    </tspan><tspan fill="#7EE787">Up 2 years      </tspan><tspan fill="#E6EDF3">  25.4%       6</tspan></text><text x="22" y="131" class="l" style="animation-delay:0.96s" xml:space="preserve"><tspan fill="#9198A1">6e3604888c4b  </tspan><tspan fill="#A5D6FF">python        </tspan><tspan fill="#7EE787">Up 2 years      </tspan><tspan fill="#E6EDF3">  23.4%       4</tspan></text><text x="22" y="152" class="l" style="animation-delay:1.02s" xml:space="preserve"><tspan fill="#9198A1">f980fb0ed189  </tspan><tspan fill="#A5D6FF">astro         </tspan><tspan fill="#7EE787">Up 9 months     </tspan><tspan fill="#E6EDF3">   5.0%       1</tspan></text><text x="22" y="173" class="l" style="animation-delay:1.09s" xml:space="preserve"><tspan fill="#9198A1">7daf403c7589  </tspan><tspan fill="#A5D6FF">php           </tspan><tspan fill="#7EE787">Up 1 month      </tspan><tspan fill="#E6EDF3">   1.9%       1</tspan></text><text x="22" y="194" class="l" style="animation-delay:1.17s" xml:space="preserve"><tspan fill="#9198A1">6651ddff6eb8  </tspan><tspan fill="#A5D6FF">dockerfile    </tspan><tspan fill="#7EE787">Up 1 month      </tspan><tspan fill="#E6EDF3">   0.2%       1</tspan></text>
+<rect class="cursor" x="22" y="199" width="8" height="15" fill="#9198A1"/>
+</svg>
