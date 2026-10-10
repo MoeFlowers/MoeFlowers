@@ -1,42 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="440" height="64" viewBox="0 0 440 64" role="img" aria-label="docker run: carga tu contenedor">
-<style>
-.k{font:500 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#F5F9FF;letter-spacing:.3px}
-.t{font:700 19px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#FFFFFF}
-.brillo{animation:barre 3.6s ease-in-out infinite}
-.halo{animation:halo 2.4s ease-in-out infinite}
-.caja{animation:sube 2.4s ease-in-out infinite;transform-origin:44px 32px}
-@keyframes barre{0%,55%{transform:translateX(-140px)}100%{transform:translateX(560px)}}
-@keyframes halo{0%,100%{stroke-opacity:.25}50%{stroke-opacity:.7}}
-@keyframes sube{0%,100%{transform:translateY(1px)}50%{transform:translateY(-2px)}}
-@media (prefers-reduced-motion:reduce){.brillo,.halo,.caja{animation:none}}
-</style>
-<defs>
-<linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
-<stop offset="0" stop-color="#1D63ED"/>
-<stop offset="1" stop-color="#0B3FAF"/>
-</linearGradient>
-<linearGradient id="luz" x1="0" y1="0" x2="1" y2="0">
-<stop offset="0" stop-color="#fff" stop-opacity="0"/>
-<stop offset=".5" stop-color="#fff" stop-opacity=".28"/>
-<stop offset="1" stop-color="#fff" stop-opacity="0"/>
-</linearGradient>
-<clipPath id="forma"><rect x="2" y="2" width="436" height="60" rx="30"/></clipPath>
-</defs>
-<rect x="2" y="2" width="436" height="60" rx="30" fill="url(#fondo)"/>
-<g clip-path="url(#forma)">
-<g transform="skewX(-20)"><rect class="brillo" x="0" y="-10" width="90" height="84" fill="url(#luz)"/></g>
-</g>
-<rect class="halo" x="2" y="2" width="436" height="60" rx="30" fill="none" stroke="#7FB4FF" stroke-width="2"/>
-<g class="caja">
-<rect x="26" y="21" width="36" height="22" rx="2.5" fill="#FFFFFF"/>
-<g stroke="#1D63ED" stroke-width="2" stroke-linecap="round">
-<line x1="33" y1="25" x2="33" y2="39"/>
-<line x1="40" y1="25" x2="40" y2="39"/>
-<line x1="47" y1="25" x2="47" y2="39"/>
-<line x1="54" y1="25" x2="54" y2="39"/>
-</g>
-</g>
-<text x="80" y="26" class="k">$ docker run puerto/tu-contenedor</text>
-<text x="80" y="47" class="t">Carga tu contenedor</text>
-<text x="410" y="40" class="t" text-anchor="end">›</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="190" height="36" viewBox="0 0 190 36" role="img" aria-label="Carga tu contenedor">
+<rect width="190" height="36" rx="6" fill="#1D63ED"/>
+<path d="M22 12v12M16 18h12" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+<text x="38" y="23" fill="#FFFFFF" style="font:600 14px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif">Carga tu contenedor</text>
 </svg>

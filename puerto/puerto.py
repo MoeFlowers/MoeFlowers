@@ -42,10 +42,6 @@ GAP_X, GAP_Y = 0.32, 0.12
 ANCHO_SALIDA = 1400
 USUARIO_VALIDO = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 TEXTO_OSCURO = {"blanco", "cian"}
-HEX = {
-    "azul": "#2496ED", "azul-oscuro": "#1D63ED", "cian": "#0DB7ED", "verde": "#17A398",
-    "naranja": "#E5862A", "rojo": "#C8394F", "gris": "#3B4A5F", "blanco": "#E9EDF2",
-}
 FUENTES = [
     os.environ.get("PUERTO_FUENTE", ""),
     "/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Bold.ttf",
@@ -259,52 +255,51 @@ def avatar(usuario):
     return None
 
 
-def tarjeta(datos, piezas, capacidad, ruta):
-    """SVG 'Últimos a bordo': avatares con el color de su contenedor. Fondo propio: se ve igual en tema claro y oscuro."""
+TEMAS = {
+    # Colores de GitHub: texto principal, texto secundario y líneas
+    "claro": {"fg": "#1F2328", "muted": "#59636E", "line": "#D1D9E0", "vacio": "#F6F8FA"},
+    "oscuro": {"fg": "#E6EDF3", "muted": "#9198A1", "line": "#3D444D", "vacio": "#151B23"},
+}
+MOSTRAR = 7
+
+
+def tarjetas(datos, capacidad, rutas):
+    """Lista 'A bordo' en dos versiones (tema claro y oscuro): avatar y usuario, sin fondo propio."""
     total = len(datos["contenedores"])
-    color = {p["usuario"]: p["color"] for p in piezas}
-    ultimos = list(reversed(datos["contenedores"][-6:]))
-    W, H = 840, 168
-    col = W / 6
-    partes = []
-    for i, c in enumerate(ultimos):
-        u = c["usuario"]
-        n = total - i
-        cx = col * i + col / 2
-        tono = HEX[color.get(u, "azul")]
-        img = avatar(u)
-        nombre = u if len(u) <= 14 else u[:13] + "…"
-        dentro = (
-            f'<image href="{img}" x="{cx - 26}" y="58" width="52" height="52" clip-path="url(#c{i})"/>' if img else
-            f'<circle cx="{cx}" cy="84" r="26" fill="#1C2D44"/><text x="{cx}" y="92" class="ini">{escape(u[0].upper())}</text>'
-        )
-        anillo = f'<circle cx="{cx}" cy="84" r="29" fill="none" stroke="{tono}" stroke-width="3"' + (' class="nuevo"' if i == 0 else "") + "/>"
-        partes.append(
-            f'<g class="v" style="animation-delay:{i * 0.12:.2f}s">'
-            f'<clipPath id="c{i}"><circle cx="{cx}" cy="84" r="26"/></clipPath>{dentro}{anillo}'
-            f'<text x="{cx}" y="134" class="u">@{escape(nombre)}</text>'
-            f'<text x="{cx}" y="152" class="n">contenedor {n}</text></g>'
-        )
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Últimos a bordo">
+    ultimos = list(reversed(datos["contenedores"][-MOSTRAR:]))
+    avatares = {c["usuario"]: avatar(c["usuario"]) for c in ultimos}
+    W, H, paso, r = 840, 112, 120, 20
+    for tema, ruta in rutas.items():
+        t = TEMAS[tema]
+        partes = []
+        for i, c in enumerate(ultimos):
+            u = c["usuario"]
+            cx = paso * i + paso / 2
+            nombre = u if len(u) <= 18 else u[:17] + "…"
+            img = avatares[u]
+            cara = (
+                f'<image href="{img}" x="{cx - r}" y="44" width="{2 * r}" height="{2 * r}" clip-path="url(#c{i})"/>' if img else
+                f'<circle cx="{cx}" cy="{44 + r}" r="{r}" fill="{t["vacio"]}"/>'
+                f'<text x="{cx}" y="{44 + r + 5}" class="m" text-anchor="middle">{escape(u[0].upper())}</text>'
+            )
+            partes.append(
+                f'<clipPath id="c{i}"><circle cx="{cx}" cy="{44 + r}" r="{r}"/></clipPath>{cara}'
+                f'<circle cx="{cx}" cy="{44 + r}" r="{r}" fill="none" stroke="{t["line"]}"/>'
+                f'<text x="{cx}" y="104" class="u" text-anchor="middle">{escape(nombre)}</text>'
+            )
+        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="A bordo">
 <style>
-.t{{font:700 16px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#E6EDF6}}
-.r{{font:500 13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#9DBEDD}}
-.u{{font:600 13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#E6EDF6;text-anchor:middle}}
-.n{{font:400 11px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#9DBEDD;text-anchor:middle}}
-.ini{{font:700 22px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#9DBEDD;text-anchor:middle}}
-.v{{opacity:0;animation:entra .6s ease-out forwards}}
-.nuevo{{animation:pulso 2.4s ease-in-out infinite}}
-@keyframes entra{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}
-@keyframes pulso{{0%,100%{{stroke-opacity:1}}50%{{stroke-opacity:.35}}}}
-@media (prefers-reduced-motion:reduce){{.v{{animation:none;opacity:1}}.nuevo{{animation:none}}}}
+.h{{font:600 14px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:{t["fg"]}}}
+.m{{font:400 12px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:{t["muted"]}}}
+.u{{font:400 12px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:{t["fg"]}}}
 </style>
-<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="14" fill="#0E1A2B" stroke="#1F3A5A"/>
-<text x="24" y="34" class="t">Últimos a bordo · Latest on board</text>
-<text x="{W - 24}" y="34" class="r" text-anchor="end">{total} de {capacidad} contenedores</text>
+<text x="0" y="16" class="h">A bordo</text>
+<text x="{W}" y="16" class="m" text-anchor="end">{total} / {capacidad}</text>
+<line x1="0" y1="28.5" x2="{W}" y2="28.5" stroke="{t["line"]}"/>
 {"".join(partes)}
 </svg>'''
-    with open(ruta, "w", encoding="utf-8", newline="\n") as f:
-        f.write(svg)
+        with open(ruta, "w", encoding="utf-8", newline="\n") as f:
+            f.write(svg)
 
 
 def generar(datos):
@@ -315,22 +310,23 @@ def generar(datos):
     sello = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
     a_bordo = datos["contenedores"][-meta["capacity"]:]
     barco = f"barco-{sello}.webp"
-    a_bordo_svg = f"a-bordo-{sello}.svg"
-    piezas = animar(meta, a_bordo, os.path.join(SALIDA, barco))
-    tarjeta(datos, piezas, meta["capacity"], os.path.join(SALIDA, a_bordo_svg))
-    nombres = ", ".join("@" + c["usuario"] for c in reversed(datos["contenedores"][-6:]))
+    claro, oscuro = f"a-bordo-claro-{sello}.svg", f"a-bordo-oscuro-{sello}.svg"
+    animar(meta, a_bordo, os.path.join(SALIDA, barco))
+    tarjetas(datos, meta["capacity"], {"claro": os.path.join(SALIDA, claro), "oscuro": os.path.join(SALIDA, oscuro)})
+    nombres = ", ".join("@" + c["usuario"] for c in reversed(datos["contenedores"][-MOSTRAR:]))
     bloque = f'''<!-- PUERTO:INICIO -->
 <p align="center">
   <img src="puerto/salida/{barco}" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
 </p>
 
 <p align="center">
-  <a href="{ISSUE}"><img src="puerto/boton.svg" alt="docker run: load your container · carga tu contenedor" height="64"></a>
+  <a href="{ISSUE}"><img src="puerto/boton.svg" alt="Carga tu contenedor" height="36"></a>
 </p>
 
-<p align="center">
-  <img src="puerto/salida/{a_bordo_svg}" alt="Últimos a bordo: {escape(nombres)}" width="100%">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="puerto/salida/{oscuro}">
+  <img src="puerto/salida/{claro}" alt="A bordo: {escape(nombres)}" width="100%">
+</picture>
 <!-- PUERTO:FIN -->'''
     with open(README, encoding="utf-8") as f:
         txt = f.read()

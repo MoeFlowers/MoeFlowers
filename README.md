@@ -2,7 +2,7 @@
 
 <p align="center">
   <b>Full-Stack Developer · Automation & AI</b><br>
-  <i>Desarrollador Full-Stack · Automatización e IA</i>
+  Desarrollador Full-Stack · Automatización e IA
 </p>
 
 <p align="center">
@@ -15,25 +15,25 @@
 
 <!-- PUERTO:INICIO -->
 <p align="center">
-  <img src="puerto/salida/barco-20261010225457.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
+  <img src="puerto/salida/barco-20261010230209.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship.%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."><img src="puerto/boton.svg" alt="docker run: load your container · carga tu contenedor" height="64"></a>
+  <a href="https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship.%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."><img src="puerto/boton.svg" alt="Carga tu contenedor" height="36"></a>
 </p>
 
-<p align="center">
-  <img src="puerto/salida/a-bordo-20261010225457.svg" alt="Últimos a bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="puerto/salida/a-bordo-oscuro-20261010230209.svg">
+  <img src="puerto/salida/a-bordo-claro-20261010230209.svg" alt="A bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
+</picture>
 <!-- PUERTO:FIN -->
 
-<sub>How it works: the button opens an issue; a GitHub Action runs a Docker image that paints your username on a container rendered in Blender, and a crane lowers it onto the ship. One container per visitor. · <i>Cómo funciona: el botón abre un issue; una GitHub Action ejecuta una imagen Docker que pinta tu usuario sobre un contenedor renderizado en Blender y una grúa lo baja al barco. Uno por visitante.</i></sub>
 
 ### About me · Sobre mí
 
 Full-stack developer with **3+ years** building web and mobile apps, bots and automations. I work in the **healthcare sector** (remote, international) and build **dual-currency billing and inventory systems** (USD/VES with the official BCV rate) for businesses in Venezuela and LATAM. I have automated about **21 h/week** of manual work across clients.
 
-*Desarrollador full-stack con más de 3 años creando apps web y móviles, bots y automatizaciones. Trabajo en el sector salud (remoto, internacional) y construyo sistemas de facturación e inventario en doble moneda para negocios de Venezuela y LATAM.*
+Desarrollador full-stack con más de 3 años creando apps web y móviles, bots y automatizaciones. Trabajo en el sector salud (remoto, internacional) y construyo sistemas de facturación e inventario en doble moneda para negocios de Venezuela y LATAM.
 
 Yaracuy, Venezuela (UTC-4) · open to remote or hybrid work · Systems Engineer (UNEFA)
 
@@ -57,10 +57,10 @@ Yaracuy, Venezuela (UTC-4) · open to remote or hybrid work · Systems Engineer 
 
 | Project | What it does · Qué hace | Stack |
 |---|---|---|
-| [**Puerto Vivo**](https://github.com/MoeFlowers/puerto-vivo) | Real-time 3D digital twin of a container terminal (simulated data) · *Gemelo digital 3D de una terminal de contenedores* | React Three Fiber · Blender |
-| [**Ordo**](https://github.com/MoeFlowers/ordo) | Multi-currency personal finance PWA: debts, subscriptions, goals · *Finanzas personales multimoneda* | Vue · Supabase |
-| **Point of Sale & Inventory** | Dual-currency (USD/VES · BCV) POS, inventory and billing for shops · *Punto de venta e inventario en doble moneda* | PHP · MySQL |
-| [**Landings 3D**](https://github.com/MoeFlowers/landings-3d) | Three concept landing pages driven by Blender-rendered scroll sequences · *Tres landings con secuencias renderizadas en Blender* | Next.js · Blender |
-| [**AI Book Recommender**](https://github.com/MoeFlowers/Sistema-de-Recomendaci-n-de-Libros-con-IA) | Collaborative filtering over 10k+ books, 85% user-validated accuracy · *Recomendador de libros con IA* | Python · Scikit-learn |
+| [**Puerto Vivo**](https://github.com/MoeFlowers/puerto-vivo) | Real-time 3D digital twin of a container terminal (simulated data) · Gemelo digital 3D de una terminal de contenedores | React Three Fiber · Blender |
+| [**Ordo**](https://github.com/MoeFlowers/ordo) | Multi-currency personal finance PWA: debts, subscriptions, goals · Finanzas personales multimoneda | Vue · Supabase |
+| **Point of Sale & Inventory** | Dual-currency (USD/VES · BCV) POS, inventory and billing for shops · Punto de venta e inventario en doble moneda | PHP · MySQL |
+| [**Landings 3D**](https://github.com/MoeFlowers/landings-3d) | Three concept landing pages driven by Blender-rendered scroll sequences · Tres landings con secuencias renderizadas en Blender | Next.js · Blender |
+| [**AI Book Recommender**](https://github.com/MoeFlowers/Sistema-de-Recomendaci-n-de-Libros-con-IA) | Collaborative filtering over 10k+ books, 85% user-validated accuracy · Recomendador de libros con IA | Python · Scikit-learn |
 
 Full case studies · Casos de estudio: [portfolio](https://portfolio-eosin-theta-40.vercel.app)
