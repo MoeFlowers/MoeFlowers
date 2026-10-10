@@ -15,7 +15,7 @@
 
 <!-- PUERTO:INICIO -->
 <p align="center">
-  <img src="puerto/salida/barco-20261010224446.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
+  <img src="puerto/salida/barco-20261010225457.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <img src="puerto/salida/a-bordo-20261010224446.svg" alt="Últimos a bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
+  <img src="puerto/salida/a-bordo-20261010225457.svg" alt="Últimos a bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
 </p>
 <!-- PUERTO:FIN -->
 

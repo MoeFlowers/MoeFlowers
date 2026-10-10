@@ -17,6 +17,7 @@ import re
 import sys
 import urllib.request
 from datetime import datetime, timezone
+from functools import lru_cache
 from html import escape
 
 from PIL import Image, ImageDraw, ImageFont
@@ -53,6 +54,7 @@ FUENTES = [
 ]
 
 
+@lru_cache(maxsize=None)
 def fuente(tam):
     for f in FUENTES:
         if f and os.path.exists(f):
@@ -161,16 +163,34 @@ def baldosas(meta, a_bordo):
     return piezas
 
 
-def fotograma(base, piezas, nueva=None, alto=0.0, ejes=None, prof_z=0.0, cable=0.0):
+def capas(base, piezas, nueva, alto_max, prof_z):
+    """Separa lo que nunca cambia de orden respecto a la pieza que baja: fondo ya compuesto,
+    frente ya compuesto y solo las piezas intermedias, que se ordenan en cada fotograma."""
+    lejos, cerca = nueva["depth"], nueva["depth"] + alto_max * prof_z
+    if cerca > lejos:
+        lejos, cerca = cerca, lejos
+    fondo = base.copy()
+    frente = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    medio = []
+    for p in sorted(piezas, key=lambda p: -p["depth"]):
+        if p["depth"] >= lejos:
+            pegar(fondo, p["tile"], p["x"], p["y"])
+        elif p["depth"] <= cerca:
+            pegar(frente, p["tile"], p["x"], p["y"])
+        else:
+            medio.append(p)
+    return fondo, medio, frente
+
+
+def fotograma(fondo, medio, frente, nueva, alto, ejes, prof_z, cable):
     """Compone un fotograma. La pieza nueva va 'alto' metros por encima de su hueco."""
-    img = base.copy()
-    orden = [(p["depth"], p, 0, 0) for p in piezas]
-    if nueva:
-        dx, dy = a_pixel(ejes, 0, 0, alto)
-        orden.append((nueva["depth"] + alto * prof_z, nueva, dx, dy))
-    for _, p, dx, dy in sorted(orden, key=lambda o: -o[0]):
-        pegar(img, p["tile"], p["x"] + dx, p["y"] + dy)
-    if nueva and cable is not None:
+    img = fondo.copy()
+    dx, dy = a_pixel(ejes, 0, 0, alto)
+    orden = [(p["depth"], p, 0, 0) for p in medio] + [(nueva["depth"] + alto * prof_z, nueva, dx, dy)]
+    for _, p, ox, oy in sorted(orden, key=lambda o: -o[0]):
+        pegar(img, p["tile"], p["x"] + ox, p["y"] + oy)
+    img.alpha_composite(frente)
+    if cable is not None:
         dibujar_grua(img, nueva, alto, ejes, cable)
     return img
 
@@ -202,25 +222,28 @@ def animar(meta, a_bordo, ruta):
     ex, ey, ez, prof_z = proyeccion(meta)
     ejes = (ex, ey, ez)
     nueva, resto = piezas[-1], piezas[:-1]
+    ALTO = 18.0
+    fondo, medio, frente = capas(base, resto, nueva, ALTO, prof_z)
+    escala = ANCHO_SALIDA / base.width
+    tam = (ANCHO_SALIDA, round(base.height * escala))
 
     frames, durs = [], []
+
+    def agregar(alto, cable, ms):
+        f = fotograma(fondo, medio, frente, nueva, alto, ejes, prof_z, cable)
+        frames.append(f.resize(tam, Image.Resampling.LANCZOS))
+        durs.append(ms)
+
     caida = 18
     for i in range(caida):
         t = i / (caida - 1)
-        alto = 18.0 * (1 - t) ** 3
-        frames.append(fotograma(base, resto, nueva, alto, ejes, prof_z, 0.0))
-        durs.append(45)
-    durs[-1] = 350
+        agregar(ALTO * (1 - t) ** 3, 0.0, 350 if i == caida - 1 else 45)
     for i in range(1, 7):
-        frames.append(fotograma(base, resto, nueva, 0.0, ejes, prof_z, i / 6))
-        durs.append(45)
-    frames.append(fotograma(base, resto, nueva, 0.0, ejes, prof_z, None))
-    durs.append(4200)
-
-    escala = ANCHO_SALIDA / base.width
-    tam = (ANCHO_SALIDA, round(base.height * escala))
-    frames = [f.resize(tam, Image.Resampling.LANCZOS) for f in frames]
-    frames[0].save(ruta, save_all=True, append_images=frames[1:], duration=durs, loop=0, quality=80, method=5)
+        agregar(0.0, i / 6, 45)
+    agregar(0.0, None, 4200)
+    # Un solo fotograma clave: entre fotogramas solo cambia la zona de la grúa
+    n = len(frames)
+    frames[0].save(ruta, save_all=True, append_images=frames[1:], duration=durs, loop=0, quality=80, method=4, kmin=n, kmax=n + 1)
     return piezas
 
 
