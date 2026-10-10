@@ -1,5 +1,12 @@
 {
  "contenedores": [
-  {"usuario": "MoeFlowers", "fecha": "2026-10-10"}
+  {
+   "usuario": "MoeFlowers",
+   "fecha": "2026-10-10"
+  },
+  {
+   "usuario": "freddysalas116-ops",
+   "fecha": "2026-10-10"
+  }
  ]
 }
