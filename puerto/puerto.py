@@ -1,31 +1,50 @@
 """Puerto Docker: cada visitante carga un contenedor con su usuario en el barco del perfil.
 
   python puerto/puerto.py cargar      lee $USUARIO, lo registra y regenera todo
-  python puerto/puerto.py dibujar     solo regenera la imagen y el README
+  python puerto/puerto.py dibujar     solo regenera las imágenes y el README
 
-Escribe puerto/respuesta.md con el mensaje para el issue.
+Genera en puerto/salida/ la animación del barco (WebP: la grúa baja el último contenedor)
+y la tarjeta "Últimos a bordo" (SVG). Los nombres cambian en cada carga para que la caché
+de imágenes de GitHub muestre siempre la versión nueva. Escribe puerto/respuesta.md con el
+mensaje para el issue.
 """
 
+import base64
 import hashlib
 import json
 import os
 import re
 import sys
+import urllib.request
 from datetime import datetime, timezone
+from html import escape
 
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 RES = os.path.join(HERE, "recursos")
+SALIDA = os.path.join(HERE, "salida")
 DATA = os.path.join(HERE, "contenedores.json")
-OUT = os.path.join(HERE, "puerto.png")
 README = os.path.join(ROOT, "README.md")
 RESPUESTA = os.path.join(HERE, "respuesta.md")
-REPO = "MoeFlowers/MoeFlowers"
+ISSUE = (
+    "https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor"
+    "&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship."
+    "%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."
+)
 
+# Medidas de escena.py (m)
+CL, CW, CH = 6.06, 2.44, 2.59
+GAP_X, GAP_Y = 0.32, 0.12
+
+ANCHO_SALIDA = 1400
 USUARIO_VALIDO = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 TEXTO_OSCURO = {"blanco", "cian"}
+HEX = {
+    "azul": "#2496ED", "azul-oscuro": "#1D63ED", "cian": "#0DB7ED", "verde": "#17A398",
+    "naranja": "#E5862A", "rojo": "#C8394F", "gris": "#3B4A5F", "blanco": "#E9EDF2",
+}
 FUENTES = [
     os.environ.get("PUERTO_FUENTE", ""),
     "/usr/share/fonts/truetype/jetbrains-mono/JetBrainsMono-Bold.ttf",
@@ -70,6 +89,26 @@ def coeficientes(destino, origen):
     return [a[i][n] / a[i][i] for i in range(n)]
 
 
+def proyeccion(meta):
+    """La cámara es ortográfica: un desplazamiento en metros es un desplazamiento fijo en píxeles."""
+    s = {(h["bay"], h["row"], h["tier"]): h for h in meta["slots"]}
+    o = s[(0, 0, 0)]
+
+    def eje(otro, metros):
+        return ((otro["x"] - o["x"]) / metros, (otro["y"] - o["y"]) / metros)
+
+    ex = eje(s[(1, 0, 0)], CL + GAP_X)
+    ey = eje(s[(0, 1, 0)], CW + GAP_Y)
+    ez = eje(s[(0, 0, 1)], CH)
+    prof_z = (s[(0, 0, 1)]["depth"] - o["depth"]) / CH
+    return ex, ey, ez, prof_z
+
+
+def a_pixel(ejes, x, y, z):
+    ex, ey, ez = ejes
+    return (x * ex[0] + y * ey[0] + z * ez[0], x * ex[1] + y * ey[1] + z * ez[1])
+
+
 def etiqueta(usuario, color):
     """Rótulo plano del costado: lo que luego se deforma sobre la cara del contenedor."""
     w, h = 960, 360
@@ -88,48 +127,191 @@ def etiqueta(usuario, color):
     return img
 
 
-def dibujar(datos):
-    meta = json.load(open(os.path.join(RES, "meta.json"), encoding="utf-8"))
-    base = Image.open(os.path.join(RES, "barco.png")).convert("RGBA")
+def pegar(lienzo, img, x, y):
+    """alpha_composite que admite coordenadas negativas (recorta lo que queda fuera)."""
+    x, y = round(x), round(y)
+    cx, cy = max(0, -x), max(0, -y)
+    if cx >= img.width or cy >= img.height:
+        return
+    if cx or cy:
+        img = img.crop((cx, cy, img.width, img.height))
+    lienzo.alpha_composite(img, (x + cx, y + cy))
+
+
+def baldosas(meta, a_bordo):
+    """Cada contenedor ya pintado con su nombre, recortado, con su posición y profundidad."""
     sprites = {}
     for c in meta["colors"]:
         im = Image.open(os.path.join(RES, f"contenedor-{c}.png")).convert("RGBA")
         caja = im.getbbox()
         sprites[c] = (im.crop(caja), caja[0], caja[1])
-
-    cap = meta["capacity"]
-    a_bordo = datos["contenedores"][-cap:]
-    ocupados = list(zip(meta["slots"], a_bordo))
-    # Primero lo más lejano a la cámara
-    ocupados.sort(key=lambda s: -s[0]["depth"])
     ax, ay = meta["anchor"]
-    for slot, cont in ocupados:
+    piezas = []
+    for slot, cont in zip(meta["slots"], a_bordo):
         color = color_de(cont["usuario"], meta["colors"])
         spr, ox, oy = sprites[color]
-        dx, dy = slot["x"] - ax, slot["y"] - ay
-        base.alpha_composite(spr, (round(ox + dx), round(oy + dy)))
+        tile = spr.copy()
         rot = etiqueta(cont["usuario"], color)
-        quad = [(x + dx, y + dy) for x, y in meta["face"]]
+        quad = [(x - ox, y - oy) for x, y in meta["face"]]
         rw, rh = rot.size
         coef = coeficientes(quad, [(0, 0), (rw, 0), (rw, rh), (0, rh)])
-        capa = rot.transform(base.size, Image.Transform.PERSPECTIVE, coef, Image.Resampling.BICUBIC)
-        base.alpha_composite(capa)
-    base.save(OUT, optimize=True)
+        tile.alpha_composite(rot.transform(tile.size, Image.Transform.PERSPECTIVE, coef, Image.Resampling.BICUBIC))
+        piezas.append({"tile": tile, "x": ox + slot["x"] - ax, "y": oy + slot["y"] - ay, "depth": slot["depth"],
+                       "slot": slot, "usuario": cont["usuario"], "color": color})
+    return piezas
 
 
-def actualizar_readme(datos):
+def fotograma(base, piezas, nueva=None, alto=0.0, ejes=None, prof_z=0.0, cable=0.0):
+    """Compone un fotograma. La pieza nueva va 'alto' metros por encima de su hueco."""
+    img = base.copy()
+    orden = [(p["depth"], p, 0, 0) for p in piezas]
+    if nueva:
+        dx, dy = a_pixel(ejes, 0, 0, alto)
+        orden.append((nueva["depth"] + alto * prof_z, nueva, dx, dy))
+    for _, p, dx, dy in sorted(orden, key=lambda o: -o[0]):
+        pegar(img, p["tile"], p["x"] + dx, p["y"] + dy)
+    if nueva and cable is not None:
+        dibujar_grua(img, nueva, alto, ejes, cable)
+    return img
+
+
+def dibujar_grua(img, nueva, alto, ejes, recogida):
+    """Spreader y cables de la grúa sobre el contenedor que baja; 'recogida' (0..1) los sube al final."""
+    ax_base = nueva["slot"]["x"], nueva["slot"]["y"]
+    d = ImageDraw.Draw(img)
+    sube = recogida * 16.0
+    top = alto + CH + 0.05 + sube
+
+    def p(x, y, z):
+        px, py = a_pixel(ejes, x, y, z)
+        return (ax_base[0] + px, ax_base[1] + py)
+
+    gancho = p(0, 0, top + 3.2)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            d.line([p(sx * (CL / 2 - 0.4), sy * (CW / 2 - 0.3), top), gancho], fill=(40, 46, 56, 255), width=2)
+    d.line([p(-(CL / 2 - 0.3), 0, top), p(CL / 2 - 0.3, 0, top)], fill=(250, 190, 40, 255), width=7)
+    arriba = p(0, 0, top + 60)
+    d.line([gancho, arriba], fill=(40, 46, 56, 255), width=3)
+    d.ellipse([gancho[0] - 5, gancho[1] - 5, gancho[0] + 5, gancho[1] + 5], fill=(250, 190, 40, 255))
+
+
+def animar(meta, a_bordo, ruta):
+    base = Image.open(os.path.join(RES, "barco.png")).convert("RGBA")
+    piezas = baldosas(meta, a_bordo)
+    ex, ey, ez, prof_z = proyeccion(meta)
+    ejes = (ex, ey, ez)
+    nueva, resto = piezas[-1], piezas[:-1]
+
+    frames, durs = [], []
+    caida = 18
+    for i in range(caida):
+        t = i / (caida - 1)
+        alto = 18.0 * (1 - t) ** 3
+        frames.append(fotograma(base, resto, nueva, alto, ejes, prof_z, 0.0))
+        durs.append(45)
+    durs[-1] = 350
+    for i in range(1, 7):
+        frames.append(fotograma(base, resto, nueva, 0.0, ejes, prof_z, i / 6))
+        durs.append(45)
+    frames.append(fotograma(base, resto, nueva, 0.0, ejes, prof_z, None))
+    durs.append(4200)
+
+    escala = ANCHO_SALIDA / base.width
+    tam = (ANCHO_SALIDA, round(base.height * escala))
+    frames = [f.resize(tam, Image.Resampling.LANCZOS) for f in frames]
+    frames[0].save(ruta, save_all=True, append_images=frames[1:], duration=durs, loop=0, quality=80, method=5)
+    return piezas
+
+
+def avatar(usuario):
+    try:
+        req = urllib.request.Request(f"https://github.com/{usuario}.png?size=96", headers={"User-Agent": "puerto-docker"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            tipo = r.headers.get_content_type()
+            if tipo.startswith("image/"):
+                return f"data:{tipo};base64,{base64.b64encode(r.read()).decode()}"
+    except Exception:
+        pass
+    return None
+
+
+def tarjeta(datos, piezas, capacidad, ruta):
+    """SVG 'Últimos a bordo': avatares con el color de su contenedor. Fondo propio: se ve igual en tema claro y oscuro."""
     total = len(datos["contenedores"])
+    color = {p["usuario"]: p["color"] for p in piezas}
     ultimos = list(reversed(datos["contenedores"][-6:]))
-    # HTML y no Markdown: el bloque va dentro de un <p> centrado, donde GitHub no procesa Markdown
-    enlaces = " · ".join(f'<a href="https://github.com/{c["usuario"]}">@{c["usuario"]}</a>' for c in ultimos)
-    bloque = (
-        "<!-- PUERTO:INICIO -->\n"
-        f"<b>{total}</b> {'contenedor cargado' if total == 1 else 'contenedores cargados'}. Últimos: {enlaces}\n"
-        "<!-- PUERTO:FIN -->"
-    )
+    W, H = 840, 168
+    col = W / 6
+    partes = []
+    for i, c in enumerate(ultimos):
+        u = c["usuario"]
+        n = total - i
+        cx = col * i + col / 2
+        tono = HEX[color.get(u, "azul")]
+        img = avatar(u)
+        nombre = u if len(u) <= 14 else u[:13] + "…"
+        dentro = (
+            f'<image href="{img}" x="{cx - 26}" y="58" width="52" height="52" clip-path="url(#c{i})"/>' if img else
+            f'<circle cx="{cx}" cy="84" r="26" fill="#1C2D44"/><text x="{cx}" y="92" class="ini">{escape(u[0].upper())}</text>'
+        )
+        anillo = f'<circle cx="{cx}" cy="84" r="29" fill="none" stroke="{tono}" stroke-width="3"' + (' class="nuevo"' if i == 0 else "") + "/>"
+        partes.append(
+            f'<g class="v" style="animation-delay:{i * 0.12:.2f}s">'
+            f'<clipPath id="c{i}"><circle cx="{cx}" cy="84" r="26"/></clipPath>{dentro}{anillo}'
+            f'<text x="{cx}" y="134" class="u">@{escape(nombre)}</text>'
+            f'<text x="{cx}" y="152" class="n">contenedor {n}</text></g>'
+        )
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Últimos a bordo">
+<style>
+.t{{font:700 16px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#E6EDF6}}
+.r{{font:500 13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#9DBEDD}}
+.u{{font:600 13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#E6EDF6;text-anchor:middle}}
+.n{{font:400 11px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#9DBEDD;text-anchor:middle}}
+.ini{{font:700 22px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:#9DBEDD;text-anchor:middle}}
+.v{{opacity:0;animation:entra .6s ease-out forwards}}
+.nuevo{{animation:pulso 2.4s ease-in-out infinite}}
+@keyframes entra{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}
+@keyframes pulso{{0%,100%{{stroke-opacity:1}}50%{{stroke-opacity:.35}}}}
+@media (prefers-reduced-motion:reduce){{.v{{animation:none;opacity:1}}.nuevo{{animation:none}}}}
+</style>
+<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="14" fill="#0E1A2B" stroke="#1F3A5A"/>
+<text x="24" y="34" class="t">Últimos a bordo · Latest on board</text>
+<text x="{W - 24}" y="34" class="r" text-anchor="end">{total} de {capacidad} contenedores</text>
+{"".join(partes)}
+</svg>'''
+    with open(ruta, "w", encoding="utf-8", newline="\n") as f:
+        f.write(svg)
+
+
+def generar(datos):
+    meta = json.load(open(os.path.join(RES, "meta.json"), encoding="utf-8"))
+    os.makedirs(SALIDA, exist_ok=True)
+    for viejo in os.listdir(SALIDA):
+        os.remove(os.path.join(SALIDA, viejo))
+    sello = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    a_bordo = datos["contenedores"][-meta["capacity"]:]
+    barco = f"barco-{sello}.webp"
+    a_bordo_svg = f"a-bordo-{sello}.svg"
+    piezas = animar(meta, a_bordo, os.path.join(SALIDA, barco))
+    tarjeta(datos, piezas, meta["capacity"], os.path.join(SALIDA, a_bordo_svg))
+    nombres = ", ".join("@" + c["usuario"] for c in reversed(datos["contenedores"][-6:]))
+    bloque = f'''<!-- PUERTO:INICIO -->
+<p align="center">
+  <img src="puerto/salida/{barco}" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
+</p>
+
+<p align="center">
+  <a href="{ISSUE}"><img src="puerto/boton.svg" alt="docker run: load your container · carga tu contenedor" height="64"></a>
+</p>
+
+<p align="center">
+  <img src="puerto/salida/{a_bordo_svg}" alt="Últimos a bordo: {escape(nombres)}" width="100%">
+</p>
+<!-- PUERTO:FIN -->'''
     with open(README, encoding="utf-8") as f:
         txt = f.read()
-    txt = re.sub(r"<!-- PUERTO:INICIO -->.*?<!-- PUERTO:FIN -->", bloque, txt, flags=re.S)
+    txt = re.sub(r"<!-- PUERTO:INICIO -->.*?<!-- PUERTO:FIN -->", lambda _: bloque, txt, flags=re.S)
     with open(README, "w", encoding="utf-8", newline="\n") as f:
         f.write(txt)
 
@@ -152,20 +334,16 @@ def cargar():
     with open(DATA, "w", encoding="utf-8", newline="\n") as f:
         json.dump(datos, f, ensure_ascii=False, indent=1)
         f.write("\n")
-    dibujar(datos)
-    actualizar_readme(datos)
+    generar(datos)
     n = len(datos["contenedores"])
     responder(
         f"`docker run` completado: @{usuario} cargó el contenedor número {n}. "
-        "Ya está en el barco de https://github.com/MoeFlowers (si no lo ves, recarga: GitHub guarda la imagen en caché unos minutos). Gracias por pasar."
+        "La grúa lo está bajando ahora mismo en https://github.com/MoeFlowers. Gracias por pasar."
     )
     return 0
 
 
 if __name__ == "__main__":
-    orden = sys.argv[1] if len(sys.argv) > 1 else "dibujar"
-    if orden == "cargar":
+    if (sys.argv[1] if len(sys.argv) > 1 else "dibujar") == "cargar":
         sys.exit(cargar())
-    datos = leer()
-    dibujar(datos)
-    actualizar_readme(datos)
+    generar(leer())

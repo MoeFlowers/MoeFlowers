@@ -23,7 +23,17 @@
 
 <p align="center">
 <!-- PUERTO:INICIO -->
-<b>2</b> contenedores cargados. Últimos: <a href="https://github.com/freddysalas116-ops">@freddysalas116-ops</a> · <a href="https://github.com/MoeFlowers">@MoeFlowers</a>
+<p align="center">
+  <img src="puerto/salida/barco-20261010224446.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship.%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."><img src="puerto/boton.svg" alt="docker run: load your container · carga tu contenedor" height="64"></a>
+</p>
+
+<p align="center">
+  <img src="puerto/salida/a-bordo-20261010224446.svg" alt="Últimos a bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
+</p>
 <!-- PUERTO:FIN -->
 </p>
 

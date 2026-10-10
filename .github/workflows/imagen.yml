@@ -1,0 +1,24 @@
+name: Imagen del puerto
+
+# Publica la imagen Docker del puerto en GitHub Packages; la carga de cada visitante solo la descarga
+on:
+  push:
+    branches: [main]
+    paths: [puerto/Dockerfile]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construir y publicar
+        run: |
+          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker build -t ghcr.io/moeflowers/puerto:latest ./puerto
+          docker push ghcr.io/moeflowers/puerto:latest

@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   issues: write
+  packages: read
 
 # Un contenedor a la vez: evita que dos cargas pisen la misma imagen
 concurrency:
@@ -18,24 +19,34 @@ jobs:
   cargar:
     if: startsWith(github.event.issue.title, 'docker run')
     runs-on: ubuntu-latest
+    env:
+      IMAGEN: ghcr.io/moeflowers/puerto:latest
     steps:
+      - name: Avisar que la carga empezó
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY/issues/${{ github.event.issue.number }}/reactions" -f content=eyes --silent
+
       - uses: actions/checkout@v4
         with:
           ref: main
 
-      - name: Construir la imagen del puerto
-        run: docker build -t puerto ./puerto
+      - name: Traer la imagen del puerto
+        run: |
+          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker pull "$IMAGEN" || docker build -t "$IMAGEN" ./puerto
 
       - name: Cargar el contenedor
         env:
           USUARIO: ${{ github.event.issue.user.login }}
-        run: docker run --rm -v "$PWD:/repo" -e USUARIO puerto cargar
+        run: docker run --rm -v "$PWD:/repo" -e USUARIO "$IMAGEN" cargar
 
       - name: Guardar el barco
         run: |
           git config user.name "MoeFlowers"
           git config user.email "143764282+MoeFlowers@users.noreply.github.com"
-          git add puerto/contenedores.json puerto/puerto.png README.md
+          git add -A puerto README.md
+          git reset -q puerto/respuesta.md
           if git diff --cached --quiet; then
             echo "Sin cambios"
           else
