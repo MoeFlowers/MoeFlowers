@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship.%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."><img src="puerto/boton.svg" alt="Carga tu contenedor" height="36"></a>
+  <a href="https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship.%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."><img src="puerto/boton-carga.svg" alt="Carga tu contenedor" height="36"></a>
 </p>
 
 <picture>

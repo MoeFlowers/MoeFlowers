@@ -320,7 +320,7 @@ def generar(datos):
 </p>
 
 <p align="center">
-  <a href="{ISSUE}"><img src="puerto/boton.svg" alt="Carga tu contenedor" height="36"></a>
+  <a href="{ISSUE}"><img src="puerto/boton-carga.svg" alt="Carga tu contenedor" height="36"></a>
 </p>
 
 <picture>
