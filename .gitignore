@@ -3,3 +3,4 @@ puerto/render-*.log
 __pycache__/
 vista-previa/
 vista.html
+perfil/render-*.log

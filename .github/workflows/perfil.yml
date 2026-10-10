@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [perfil/perfil.py, perfil/perfil.json]
+    paths: [perfil/perfil.py, perfil/libreria.py, perfil/perfil.json, perfil/recursos/**]
 
 permissions:
   contents: write
@@ -25,10 +25,14 @@ jobs:
         with:
           ref: main
 
+      # Pillow y las fuentes vienen en la imagen del puerto; aquí se construye para usar siempre la última
+      - name: Construir la imagen
+        run: docker build -q -t perfil ./puerto
+
       - name: Generar las secciones
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 perfil/perfil.py
+        run: docker run --rm -v "$PWD:/repo" -e GITHUB_TOKEN --entrypoint python perfil perfil/perfil.py
 
       # Commits del bot y no del usuario: la actualización diaria no debe sumar actividad a su gráfica
       - name: Guardar

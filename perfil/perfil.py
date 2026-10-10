@@ -1,6 +1,6 @@
 """Secciones dinámicas del perfil, contadas como una sesión de Docker.
 
-  docker inspect moeflowers   sobre mí, con datos del día (último push, commits del año, tasa BCV)
+  docker inspect moeflowers   sobre mí, con datos del día (último push y commits del año)
   docker ps                   lenguajes de los repos públicos, con su tiempo en uso
   librería                    un libro por repo público; al pasar el ratón se ve el proyecto
 
@@ -11,12 +11,13 @@ los bloques marcados del README.
 
 import hashlib
 import json
-import math
 import os
 import re
 import urllib.request
 from datetime import datetime, timezone
 from html import escape
+
+import libreria
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -48,18 +49,6 @@ def api(ruta):
         req.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
     with urllib.request.urlopen(req, timeout=20) as r:
         return json.load(r)
-
-
-def tasa_bcv():
-    try:
-        req = urllib.request.Request("https://ve.dolarapi.com/v1/dolares/oficial", headers={"User-Agent": "perfil"})
-        with urllib.request.urlopen(req, timeout=10) as r:
-            d = json.load(r)
-        valor = f"{d['promedio']:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        fecha = datetime.fromisoformat(d["fechaActualizacion"]).strftime("%d/%m/%Y")
-        return f"1 USD = {valor} Bs (BCV, {fecha})"
-    except Exception:
-        return None
 
 
 def hace(desde):
@@ -148,9 +137,6 @@ def inspect(repos):
     except Exception:
         pass
     datos["State"] = estado
-    tasa = tasa_bcv()
-    if tasa:
-        datos["Rate"] = tasa
     return terminal("docker inspect moeflowers", json_lineas(datos))
 
 
@@ -181,124 +167,6 @@ def ps(repos):
     return terminal("docker ps", lineas)
 
 
-# Librería
-
-def mezclar(hexa, factor):
-    """factor > 0 aclara hacia blanco, < 0 oscurece hacia negro."""
-    r, g, b = (int(hexa[i:i + 2], 16) for i in (1, 3, 5))
-    if factor >= 0:
-        r, g, b = (round(c + (255 - c) * factor) for c in (r, g, b))
-    else:
-        r, g, b = (round(c * (1 + factor)) for c in (r, g, b))
-    return f"#{r:02X}{g:02X}{b:02X}"
-
-
-def luminancia(hexa):
-    def lin(c):
-        c /= 255
-        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = (int(hexa[i:i + 2], 16) for i in (1, 3, 5))
-    return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
-
-
-ALTO_TILE, Y_ESTANTE = 236, 212
-
-
-def estante(ancho):
-    """Tramo de tabla: cada tile lleva el suyo y juntos forman una estantería continua."""
-    return (
-        f'<rect x="0" y="{Y_ESTANTE}" width="{ancho}" height="7" fill="#9C7A5B"/>'
-        f'<rect x="0" y="{Y_ESTANTE + 7}" width="{ancho}" height="13" fill="#6E5139"/>'
-        f'<rect x="0" y="{Y_ESTANTE + 7}" width="{ancho}" height="1" fill="#B8977A"/>'
-        f'<rect x="0" y="{Y_ESTANTE + 20}" width="{ancho}" height="4" fill="#000" opacity=".18"/>'
-    )
-
-
-def libro(repo, info, animado):
-    lang = repo.get("language")
-    base = LENGUAJE.get(lang, "#57606A")
-    if repo["fork"]:
-        base = mezclar(base, -0.35)
-    kb = max(repo.get("size", 1), 1)
-    alto = round(min(190, 132 + 8 * math.log10(kb) * 1.6))
-    titulo = info.get("titulo") or repo["name"].replace("-", " ").replace("_", " ").capitalize()
-    tam = 13
-    while tam > 10 and len(titulo) * tam * 0.6 > alto - 46:
-        tam -= 1
-    if len(titulo) * tam * 0.6 > alto - 46:
-        titulo = titulo[: int((alto - 46) / (tam * 0.6)) - 1] + "…"
-    grosor = round(min(54, 36 + 4 * math.log10(kb)))
-    ancho = grosor + 4
-    x0, y0 = 2, Y_ESTANTE - alto
-    tinta = "#1F2328" if luminancia(base) > 0.45 else "#FFFFFF"
-    banda = mezclar(base, 0.45) if tinta == "#FFFFFF" else mezclar(base, -0.4)
-    gid = hashlib.sha1(repo["name"].encode()).hexdigest()[:8]
-    cinta = (f'<path d="M{x0 + grosor - 14} {y0} h8 v22 l-4 -5 l-4 5 z" fill="#C8394F"/>' if repo["fork"] else "")
-    clase = ' class="sale"' if animado else ""
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{ancho}" height="{ALTO_TILE}" viewBox="0 0 {ancho} {ALTO_TILE}" role="img" aria-label="{escape(titulo)}">
-<style>
-.sale{{animation:sale 7s ease-in-out 1.5s infinite}}
-@keyframes sale{{0%,62%,100%{{transform:translateY(0)}}74%,88%{{transform:translateY(-12px)}}}}
-@media (prefers-reduced-motion:reduce){{.sale{{animation:none}}}}
-</style>
-<defs><linearGradient id="g{gid}" x1="0" y1="0" x2="1" y2="0">
-<stop offset="0" stop-color="{mezclar(base, -0.35)}"/><stop offset=".18" stop-color="{base}"/>
-<stop offset=".55" stop-color="{mezclar(base, 0.14)}"/><stop offset="1" stop-color="{mezclar(base, -0.42)}"/>
-</linearGradient></defs>
-{estante(ancho)}
-<g{clase}>
-<rect x="{x0}" y="{y0}" width="{grosor}" height="{alto}" rx="2.5" fill="url(#g{gid})"/>
-<rect x="{x0}" y="{y0 + 12}" width="{grosor}" height="2" fill="{banda}" opacity=".7"/>
-<rect x="{x0}" y="{y0 + alto - 16}" width="{grosor}" height="2" fill="{banda}" opacity=".7"/>
-{cinta}
-<text transform="translate({x0 + grosor / 2 + tam * 0.36:.1f} {y0 + alto / 2:.1f}) rotate(-90)" text-anchor="middle" fill="{tinta}" style="font:600 {tam}px {SANS};letter-spacing:.2px">{escape(titulo)}</text>
-</g>
-</svg>'''
-    desc = (info.get("descripcion") or repo.get("description") or "").replace(" — ", ": ").replace("—", ":").strip()
-    if desc.lower().startswith(titulo.lower()):
-        partes = [desc]
-    else:
-        partes = [titulo + (f": {desc}" if desc else "")]
-    if repo["fork"]:
-        partes.append("fork")
-    if lang:
-        partes.append(lang)
-    partes.append(f"actualizado {repo['pushed_at'][:10]}")
-    return svg, " · ".join(partes)
-
-
-def sujetalibros(lado):
-    ancho = 24
-    x = 4 if lado == "izq" else ancho - 12
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{ancho}" height="{ALTO_TILE}" viewBox="0 0 {ancho} {ALTO_TILE}" aria-hidden="true">
-{estante(ancho)}
-<rect x="{x}" y="{Y_ESTANTE - 92}" width="8" height="92" rx="2" fill="#2B3137"/>
-<rect x="{x}" y="{Y_ESTANTE - 92}" width="8" height="3" rx="1.5" fill="#57606A"/>
-</svg>'''
-    return svg
-
-
-def libreria(repos, sello):
-    infos = CONFIG.get("libros", {})
-    propios = sorted([r for r in repos if not r["fork"]], key=lambda r: r["pushed_at"], reverse=True)
-    forks = sorted([r for r in repos if r["fork"]], key=lambda r: r["pushed_at"], reverse=True)
-    html = []
-    nombre = f"libro-0-{sello}.svg"
-    open(os.path.join(SALIDA, nombre), "w", encoding="utf-8", newline="\n").write(sujetalibros("izq"))
-    html.append(f'<img src="perfil/salida/{nombre}" alt="" height="{ALTO_TILE}">')
-    for i, r in enumerate(propios + forks, 1):
-        svg, tooltip = libro(r, infos.get(r["name"], {}), animado=(i == 1))
-        nombre = f"libro-{i}-{sello}.svg"
-        open(os.path.join(SALIDA, nombre), "w", encoding="utf-8", newline="\n").write(svg)
-        t = escape(tooltip, quote=True)
-        html.append(f'<a href="{r["html_url"]}" title="{t}"><img src="perfil/salida/{nombre}" alt="{escape(r["name"], quote=True)}" title="{t}" height="{ALTO_TILE}"></a>')
-    nombre = f"libro-z-{sello}.svg"
-    open(os.path.join(SALIDA, nombre), "w", encoding="utf-8", newline="\n").write(sujetalibros("der"))
-    html.append(f'<img src="perfil/salida/{nombre}" alt="" height="{ALTO_TILE}">')
-    # Sin espacios entre imágenes: así los tramos de estante se juntan
-    return "<p>" + "".join(html) + "</p>"
-
-
 def reemplazar(txt, marca, contenido):
     patron = rf"<!-- {marca}:INICIO -->.*?<!-- {marca}:FIN -->"
     nuevo = f"<!-- {marca}:INICIO -->\n{contenido}\n<!-- {marca}:FIN -->"
@@ -317,9 +185,9 @@ def main():
     for clave, svg in archivos.items():
         open(os.path.join(SALIDA, f"{clave}-{sello}.svg"), "w", encoding="utf-8", newline="\n").write(svg)
     txt = open(README, encoding="utf-8").read()
-    txt = reemplazar(txt, "INSPECT", f'<img src="perfil/salida/inspect-{sello}.svg" alt="docker inspect moeflowers: perfil, estado y tasa BCV del día" width="100%">')
+    txt = reemplazar(txt, "INSPECT", f'<img src="perfil/salida/inspect-{sello}.svg" alt="docker inspect moeflowers: perfil y actividad" width="100%">')
     txt = reemplazar(txt, "PS", f'<img src="perfil/salida/ps-{sello}.svg" alt="docker ps: lenguajes de mis repositorios públicos" width="100%">')
-    txt = reemplazar(txt, "LIBROS", libreria(repos, sello))
+    txt = reemplazar(txt, "LIBROS", libreria.generar(repos, CONFIG.get("libros", {}), LENGUAJE, sello, SALIDA))
     open(README, "w", encoding="utf-8", newline="\n").write(txt)
     print("listo", sello, len(repos), "repos")
 

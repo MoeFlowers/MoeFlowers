@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="104" height="36" viewBox="0 0 104 36" role="img" aria-label="Correo">
+<rect x=".5" y=".5" width="103" height="35" rx="6" fill="#FFFFFF" stroke="#D1D9E0"/>
+<g transform="translate(14 10)"><g fill="none" stroke="#1F2328" stroke-width="1.6" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1.5 4l6.5 5 6.5-5"/></g></g>
+<text x="38" y="23" fill="#1F2328" style="font:600 14px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif">Correo</text>
+</svg>
