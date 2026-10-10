@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="36" viewBox="0 0 200 36" role="img" aria-label="Carga tu contenedor">
+<rect x=".5" y=".5" width="199" height="35" rx="6" fill="#FFFFFF" stroke="#D1D9E0"/>
+<path d="M22 12v12M16 18h12" stroke="#1F2328" stroke-width="2" stroke-linecap="round"/>
+<text x="38" y="23" fill="#1F2328" style="font:600 14px -apple-system,'Segoe UI',Helvetica,Arial,sans-serif">Carga tu contenedor</text>
+</svg>
