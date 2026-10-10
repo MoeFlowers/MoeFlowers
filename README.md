@@ -13,15 +13,6 @@
 
 ### Docker port · Puerto Docker
 
-<p align="center">
-  <img src="puerto/puerto.png" alt="Container ship rendered in Blender; every container carries the GitHub username of a visitor" width="100%">
-</p>
-
-<p align="center">
-  <a href="https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship.%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."><b>docker run: load your container · carga tu contenedor</b></a>
-</p>
-
-<p align="center">
 <!-- PUERTO:INICIO -->
 <p align="center">
   <img src="puerto/salida/barco-20261010224446.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
@@ -35,9 +26,8 @@
   <img src="puerto/salida/a-bordo-20261010224446.svg" alt="Últimos a bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
 </p>
 <!-- PUERTO:FIN -->
-</p>
 
-<sub>How it works: the link opens an issue; a GitHub Action builds a Docker image that paints your username on a container sprite (rendered in Blender) and places it on the ship. One container per visitor. · <i>Cómo funciona: el enlace abre un issue; una GitHub Action levanta un contenedor Docker que pinta tu usuario sobre un contenedor renderizado en Blender y lo coloca en el barco. Uno por visitante.</i></sub>
+<sub>How it works: the button opens an issue; a GitHub Action runs a Docker image that paints your username on a container rendered in Blender, and a crane lowers it onto the ship. One container per visitor. · <i>Cómo funciona: el botón abre un issue; una GitHub Action ejecuta una imagen Docker que pinta tu usuario sobre un contenedor renderizado en Blender y una grúa lo baja al barco. Uno por visitante.</i></sub>
 
 ### About me · Sobre mí
 
