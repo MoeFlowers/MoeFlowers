@@ -23,7 +23,7 @@
 
 <p align="center">
 <!-- PUERTO:INICIO -->
-**1** contenedor cargado. Últimos: [@MoeFlowers](https://github.com/MoeFlowers)
+<b>1</b> contenedor cargado. Últimos: <a href="https://github.com/MoeFlowers">@MoeFlowers</a>
 <!-- PUERTO:FIN -->
 </p>
 

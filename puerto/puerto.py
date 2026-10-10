@@ -120,10 +120,11 @@ def dibujar(datos):
 def actualizar_readme(datos):
     total = len(datos["contenedores"])
     ultimos = list(reversed(datos["contenedores"][-6:]))
-    enlaces = " · ".join(f"[@{c['usuario']}](https://github.com/{c['usuario']})" for c in ultimos)
+    # HTML y no Markdown: el bloque va dentro de un <p> centrado, donde GitHub no procesa Markdown
+    enlaces = " · ".join(f'<a href="https://github.com/{c["usuario"]}">@{c["usuario"]}</a>' for c in ultimos)
     bloque = (
         "<!-- PUERTO:INICIO -->\n"
-        f"**{total}** {'contenedor cargado' if total == 1 else 'contenedores cargados'}. Últimos: {enlaces}\n"
+        f"<b>{total}</b> {'contenedor cargado' if total == 1 else 'contenedores cargados'}. Últimos: {enlaces}\n"
         "<!-- PUERTO:FIN -->"
     )
     with open(README, encoding="utf-8") as f:
