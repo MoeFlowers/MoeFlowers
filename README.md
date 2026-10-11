@@ -16,7 +16,7 @@
 
 <!-- PUERTO:INICIO -->
 <p align="center">
-  <img src="puerto/salida/barco-20261010230209.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
+  <img src="puerto/salida/barco-20261011002334.webp" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
 </p>
 
 <p align="center">
@@ -24,8 +24,8 @@
 </p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="puerto/salida/a-bordo-oscuro-20261010230209.svg">
-  <img src="puerto/salida/a-bordo-claro-20261010230209.svg" alt="A bordo: @freddysalas116-ops, @MoeFlowers" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="puerto/salida/a-bordo-oscuro-20261011002334.svg">
+  <img src="puerto/salida/a-bordo-claro-20261011002334.svg" alt="A bordo: @rapanuti, @freddysalas116-ops, @MoeFlowers" width="100%">
 </picture>
 <!-- PUERTO:FIN -->
 
