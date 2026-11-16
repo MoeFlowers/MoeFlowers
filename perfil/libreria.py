@@ -12,6 +12,7 @@ import json
 import math
 import os
 from functools import lru_cache
+from hashlib import sha256
 from html import escape
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
@@ -121,9 +122,10 @@ def variante(kb, texto):
     return f"libro-{grosor}-{alto}"
 
 
-def generar(repos, infos, colores, sello, salida):
+def generar(repos, infos, colores, salida):
     """Escribe un SVG por libro (y los sujetalibros) y devuelve el HTML de la estantería."""
-    meta = json.load(open(os.path.join(RES, "libros.json"), encoding="utf-8"))
+    with open(os.path.join(RES, "libros.json"), encoding="utf-8") as f:
+        meta = json.load(f)
     estante = imagen("estante.png")
     alto = meta["alto"]
     x = 0
@@ -138,8 +140,8 @@ def generar(repos, infos, colores, sello, salida):
     suj = imagen("sujetalibros.png")
     piezas.append(("suj-izq", svg(suj.width, alto, Image.alpha_composite(tramo(suj.width), suj)), None))
 
-    propios = sorted([r for r in repos if not r["fork"]], key=lambda r: r["pushed_at"], reverse=True)
-    forks = sorted([r for r in repos if r["fork"]], key=lambda r: r["pushed_at"], reverse=True)
+    propios = sorted([r for r in repos if not r["fork"]], key=lambda r: (r["pushed_at"], r["name"]), reverse=True)
+    forks = sorted([r for r in repos if r["fork"]], key=lambda r: (r["pushed_at"], r["name"]), reverse=True)
     for i, r in enumerate(propios + forks):
         info = infos.get(r["name"], {})
         nombre = info.get("titulo") or r["name"].replace("-", " ").replace("_", " ").capitalize()
@@ -156,6 +158,7 @@ def generar(repos, infos, colores, sello, salida):
 
     html = []
     for clave, contenido, datos in piezas:
+        sello = sha256(contenido.encode("utf-8")).hexdigest()[:12]
         archivo = f"{clave}-{sello}.svg"
         with open(os.path.join(salida, archivo), "w", encoding="utf-8", newline="\n") as f:
             f.write(contenido)
@@ -171,6 +174,7 @@ def generar(repos, infos, colores, sello, salida):
             partes.append(r["language"])
         partes.append(f"actualizado {r['pushed_at'][:10]}")
         t = escape(" · ".join(partes), quote=True)
-        html.append(f'<a href="{r["html_url"]}" title="{t}"><img src="perfil/salida/{archivo}" alt="{escape(nombre, quote=True)}" title="{t}" height="{alto // 2}"></a>')
+        enlace = escape(r["html_url"], quote=True)
+        html.append(f'<a href="{enlace}" title="{t}"><img src="perfil/salida/{archivo}" alt="{escape(nombre, quote=True)}" title="{t}" height="{alto // 2}"></a>')
     # Sin espacios entre imágenes: así los tramos de estante se juntan
     return "<p>" + "".join(html) + "</p>"
