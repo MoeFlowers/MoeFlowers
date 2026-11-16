@@ -1,14 +1,6 @@
 {
  "usuario": "MoeFlowers",
  "excluir": ["MoeFlowers"],
- "inspect": {
-  "Name": "Moises Flores",
-  "Role": "Desarrollador Full-Stack · Automatización e IA",
-  "Location": "Yaracuy, Venezuela (UTC-4)",
-  "Experience": "3+ años",
-  "Languages": ["Español (nativo)", "Inglés (B2/C1)"],
-  "Status": "Disponible · remoto o híbrido"
- },
  "libros": {
   "Sistema-de-Recomendaci-n-de-Libros-con-IA": {"titulo": "Recomendador IA", "descripcion": "Recomendador de libros con IA: filtrado colaborativo sobre más de 10.000 libros"},
   "Portfolio": {"titulo": "Portfolio", "descripcion": "Portafolio personal con casos de estudio"},
@@ -21,6 +13,6 @@
   "vibes-mini-market": {"titulo": "Vibes Mini Market"},
   "tarea_implantacion": {"titulo": "Tarea implantación"},
   "pagestest": {"titulo": "Pages test"},
-  "editor": {"titulo": "Editor 3D"}
+  "editor": {"titulo": "Editor 3D", "descripcion": "Open-source 3D architectural editor"}
  }
 }

@@ -1,49 +1,39 @@
-name: Perfil
+name: Vista previa del perfil
 
-# Regenera docker inspect, docker ps y la librería con los datos del día
 on:
   schedule:
     - cron: "17 11 * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [perfil/perfil.py, perfil/libreria.py, perfil/perfil.json, perfil/recursos/**]
 
 permissions:
-  contents: write
-
-# Comparte grupo con el puerto: así nunca empujan los dos a la vez
-concurrency:
-  group: puerto
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  actualizar:
+  generar:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          persist-credentials: false
 
-      # Pillow y las fuentes vienen en la imagen del puerto; aquí se construye para usar siempre la última
       - name: Construir la imagen
         run: docker build -q -t perfil ./puerto
 
-      - name: Generar las secciones
+      - name: Generar la biblioteca
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: docker run --rm -v "$PWD:/repo" -e GITHUB_TOKEN --entrypoint python perfil perfil/perfil.py
 
-      # Commits del bot y no del usuario: la actualización diaria no debe sumar actividad a su gráfica
-      - name: Guardar
+      - name: Preparar el parche
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A perfil README.md
-          if git diff --cached --quiet; then
-            echo "Sin cambios"
-          else
-            git commit -m "Perfil: datos del día"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+          git add -- README.md perfil/salida
+          git diff --cached --binary > revision.patch
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: perfil-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            README.md
+            perfil/salida
+            revision.patch
+          retention-days: 30

@@ -4,8 +4,7 @@
   python puerto/puerto.py dibujar     solo regenera las imágenes y el README
 
 Genera en puerto/salida/ la animación del barco (WebP: la grúa baja el último contenedor)
-y la tarjeta "Últimos a bordo" (SVG). Los nombres cambian en cada carga para que la caché
-de imágenes de GitHub muestre siempre la versión nueva. Escribe puerto/respuesta.md con el
+y la tarjeta "Últimos a bordo" (SVG). Los nombres cambian cuando cambia una imagen, para renovar la caché de GitHub. Escribe puerto/respuesta.md con el
 mensaje para el issue.
 """
 
@@ -19,6 +18,8 @@ import urllib.request
 from datetime import datetime, timezone
 from functools import lru_cache
 from html import escape
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -31,8 +32,8 @@ README = os.path.join(ROOT, "README.md")
 RESPUESTA = os.path.join(HERE, "respuesta.md")
 ISSUE = (
     "https://github.com/MoeFlowers/MoeFlowers/issues/new?title=docker+run+puerto%2Fmi-contenedor"
-    "&body=Press+%22Create%22+and+a+GitHub+Action+will+load+a+container+with+your+username+onto+the+ship."
-    "%0A%0APulsa+%22Create%22+y+una+GitHub+Action+cargar%C3%A1+un+contenedor+con+tu+usuario+en+el+barco."
+    "&body=Press+%22Create%22+to+request+a+container+with+your+GitHub+username."
+    "%0A%0APulsa+%22Create%22+para+solicitar+un+contenedor+con+tu+usuario+de+GitHub."
 )
 
 # Medidas de escena.py (m)
@@ -303,36 +304,58 @@ def tarjetas(datos, capacidad, rutas):
 
 
 def generar(datos):
-    meta = json.load(open(os.path.join(RES, "meta.json"), encoding="utf-8"))
-    os.makedirs(SALIDA, exist_ok=True)
-    for viejo in os.listdir(SALIDA):
-        os.remove(os.path.join(SALIDA, viejo))
-    sello = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    readme, salida = Path(README), Path(SALIDA)
+    texto = readme.read_bytes().decode("utf-8")
+    inicio, fin = "<!-- PUERTO:INICIO -->", "<!-- PUERTO:FIN -->"
+    antes, _, resto = texto.partition(inicio)
+    _, separador, despues = resto.partition(fin)
+    if texto.count(inicio) != 1 or texto.count(fin) != 1 or not separador:
+        raise SystemExit("El README debe tener un solo bloque PUERTO")
+
+    meta = json.loads((Path(RES) / "meta.json").read_text(encoding="utf-8"))
     a_bordo = datos["contenedores"][-meta["capacity"]:]
-    barco = f"barco-{sello}.webp"
-    claro, oscuro = f"a-bordo-claro-{sello}.svg", f"a-bordo-oscuro-{sello}.svg"
-    animar(meta, a_bordo, os.path.join(SALIDA, barco))
-    tarjetas(datos, meta["capacity"], {"claro": os.path.join(SALIDA, claro), "oscuro": os.path.join(SALIDA, oscuro)})
+    with TemporaryDirectory(dir=salida.parent) as temporal:
+        carpeta = Path(temporal)
+        webp = carpeta / "barco.webp"
+        svg_claro = carpeta / "a-bordo-claro.svg"
+        svg_oscuro = carpeta / "a-bordo-oscuro.svg"
+        animar(meta, a_bordo, webp)
+        tarjetas(datos, meta["capacity"], {"claro": svg_claro, "oscuro": svg_oscuro})
+        salida.mkdir(exist_ok=True)
+
+        recursos = []
+        for ruta in (webp, svg_claro, svg_oscuro):
+            sello = hashlib.sha256(ruta.read_bytes()).hexdigest()[:12]
+            destino = f"{ruta.stem}-{sello}{ruta.suffix}"
+            ruta.replace(salida / destino)
+            recursos.append(destino)
+        bloque = bloque_readme(datos, *recursos)
+        salto = "\r\n" if "\r\n" in texto else "\n"
+        nuevo = antes + inicio + salto + bloque.replace("\n", salto) + salto + fin + despues
+        if nuevo != texto:
+            readme_temporal = carpeta / readme.name
+            readme_temporal.write_bytes(nuevo.encode("utf-8"))
+            readme_temporal.replace(readme)
+        for patron in ("barco-*.webp", "a-bordo-*.svg"):
+            for ruta in salida.glob(patron):
+                if ruta.name not in recursos:
+                    ruta.unlink()
+
+
+def bloque_readme(datos, barco, claro, oscuro):
     nombres = ", ".join("@" + c["usuario"] for c in reversed(datos["contenedores"][-MOSTRAR:]))
-    bloque = f'''<!-- PUERTO:INICIO -->
-<p align="center">
+    return f'''<p align="center">
   <img src="puerto/salida/{barco}" alt="Container ship rendered in Blender; a crane lowers the latest container. Every container carries the GitHub username of a visitor" width="100%">
 </p>
 
 <p align="center">
-  <a href="{ISSUE}"><img src="puerto/boton-blanco.svg" alt="Carga tu contenedor" height="36"></a>
+  <a href="{ISSUE}"><img src="puerto/boton-blanco.svg" alt="Request a container" height="36"></a>
 </p>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="puerto/salida/{oscuro}">
   <img src="puerto/salida/{claro}" alt="A bordo: {escape(nombres)}" width="100%">
-</picture>
-<!-- PUERTO:FIN -->'''
-    with open(README, encoding="utf-8") as f:
-        txt = f.read()
-    txt = re.sub(r"<!-- PUERTO:INICIO -->.*?<!-- PUERTO:FIN -->", lambda _: bloque, txt, flags=re.S)
-    with open(README, "w", encoding="utf-8", newline="\n") as f:
-        f.write(txt)
+</picture>'''
 
 
 def responder(texto):
@@ -350,14 +373,14 @@ def cargar():
         responder(f"@{usuario}, tu contenedor ya va a bordo. Búscalo en el barco de https://github.com/MoeFlowers")
         return 0
     datos["contenedores"].append({"usuario": usuario, "fecha": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+    generar(datos)
     with open(DATA, "w", encoding="utf-8", newline="\n") as f:
         json.dump(datos, f, ensure_ascii=False, indent=1)
         f.write("\n")
-    generar(datos)
     n = len(datos["contenedores"])
     responder(
-        f"`docker run` completado: @{usuario} cargó el contenedor número {n}. "
-        "La grúa lo está bajando ahora mismo en https://github.com/MoeFlowers. Gracias por pasar."
+        f"Contenedor número {n} preparado para @{usuario}. "
+        "El perfil mostrará la animación cuando se publique la actualización."
     )
     return 0
 
